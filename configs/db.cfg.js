@@ -1,15 +1,13 @@
 // getting-started.js
-import mongoose from'mongoose';
-import dotenv from 'dotenv';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const uri = `mongodb+srv://${process.env.MONGODB_UNAME}:${process.env.MONGODB_PWD}@web76cluster.ttoub03.mongodb.net/${process.env.MONGODB_DB_NAME}?retryWrites=true&w=majority&appName=web76cluster`;
+const uri = `mongodb+srv://${process.env.MONGODB_DB_NAME}:${process.env.MONGODB_PWD}@cluster0.djglaud.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 export const connectDB = async () => {
-    try {
-        await mongoose.connect(uri);
-        console.log('Connected to database successfully');
-    } catch (error) {
-        console.log(error.message)
-    }
-}
-
-
+  try {
+    await mongoose.connect(uri);
+    console.log("Connected to database successfully");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
