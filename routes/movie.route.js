@@ -6,6 +6,7 @@ import {
   updateMovie,
   deleteMovie,
   searchMovies,
+  uploadImage,
 } from "../controllers/movie.controller.js";
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.post("/", createMovie);
 router.put("/:movieId", updateMovie);
 router.delete("/:movieId", deleteMovie);
 router.get("/search", searchMovies);
+router.post("/movies/:movieId/upload-update-image", uploadImage);
 
 export default router;

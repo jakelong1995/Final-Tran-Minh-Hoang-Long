@@ -1,4 +1,12 @@
 import Movie from "../models/movie.js";
+import cloudinary from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const getMovies = async (req, res) => {
   try {
@@ -165,5 +173,42 @@ export const searchMovies = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+};
+
+export const uploadImage = async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({
+        msg: "Please provide an image file!",
+      });
+    }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(file.path);
+
+    // Update movie's image URL
+    const { movieId } = req.params;
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({
+        msg: "Movie not found!",
+      });
+    }
+
+    // Update the movie's image URL
+    movie.image = result.secure_url;
+    await movie.save();
+
+    return res.status(200).json({
+      msg: "Image uploaded and movie image updated successfully!",
+      data: movie,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      stack: error.stack,
+    });
   }
 };
