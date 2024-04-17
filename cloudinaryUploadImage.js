@@ -12,7 +12,7 @@ const cloudinaryUploadImage = (path) => {
     cloudinary.uploader.upload(
       path,
       {
-        folder: "lesson08",
+        folder: "Final",
       },
       (err, result) => {
         if (err) {
