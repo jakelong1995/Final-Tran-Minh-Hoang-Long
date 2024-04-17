@@ -1,9 +1,21 @@
-import User from "../models/user.js";
 import Movie from "../models/movie.js";
 
 export const getMovies = async (req, res) => {
   try {
-    const movies = await Movie.find();
+    // Get query parameters for sorting
+    const { sortByYear, sortOrder } = req.query;
+
+    let movies;
+    if (sortByYear && sortByYear.toLowerCase() === "true") {
+      // Sort movies by year
+      const sortOption =
+        sortOrder && sortOrder.toLowerCase() === "desc" ? -1 : 1;
+      movies = await Movie.find().sort({ year: sortOption });
+    } else {
+      // Default: Get movies without sorting
+      movies = await Movie.find();
+    }
+
     return res.status(200).json({
       msg: "Get movies successfully!",
       data: movies,
@@ -16,15 +28,49 @@ export const getMovies = async (req, res) => {
   }
 };
 
+// Get a movie by ID
+export const getMovieById = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({
+        msg: "Movie not found!",
+      });
+    }
+
+    return res.status(200).json({
+      msg: "Get movie by ID successfully!",
+      data: movie,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      stack: error.stack,
+    });
+  }
+};
+
+// Create a new movie
 export const createMovie = async (req, res) => {
   try {
-    const { name, time, year, image, introduce } = req.body; // c1
+    const { name, time, year, image, introduce } = req.body;
 
-    // 1. Validation
+    // Validation
+    if (!name || !time || !year || !image || !introduce) {
+      return res.status(400).json({
+        msg: "All fields are required!",
+      });
+    }
 
-    // 2. Check if user is existed
+    const existingMovie = await Movie.findOne({ name });
+    if (existingMovie) {
+      return res.status(409).json({
+        msg: "A movie with the same name already exists!",
+      });
+    }
 
-    // 3. Create movie
     const movie = new Movie({
       name,
       time,
@@ -45,74 +91,31 @@ export const createMovie = async (req, res) => {
     });
   }
 };
-/**
- * c1: check người call api có phải là người sở hửu movie cần update hay không? => check xem movie với ủeId có tồn tại hay không?
- * c2: check movie có tồn tại hay không? => check xem người call api có id giống với ủeId của movie cần update hay không?
- */
+
+// Update an existing movie
 export const updateMovie = async (req, res) => {
   try {
-    const { userId, skills = [], hobbies = [], targets = [] } = req.body; // c1
-    const { _id: requestUserId } = req.user;
-    // c2: const {movieId} = req.params; /:movieId
+    const { name, time, year, image, introduce } = req.body;
+    const { movieId } = req.params;
 
-    // 0. Check owner
-    console.log(requestUserId, userId);
-    if (userId !== requestUserId.toString()) {
-      return res.status(401).json({
-        msg: "You are not owner of this movie!",
-      });
-    }
-    // 1. Validation
-    if (!userId) {
-      return res.status(400).json({
-        msg: "userId is required!",
-      });
-    }
-
-    if (skills && !Array.isArray(skills)) {
-      return res.status(400).json({
-        msg: "Skills is not array!",
-      });
-    }
-
-    if (hobbies && !Array.isArray(hobbies)) {
-      return res.status(400).json({
-        msg: "Hobbies is not array!",
-      });
-    }
-
-    if (targets && !Array.isArray(targets)) {
-      return res.status(400).json({
-        msg: "Targets is not array!",
-      });
-    }
-
-    // 2. Check if user is existed
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(401).json({
-        msg: "User is not found!",
-      });
-    }
-    const movie = await Movie.findOne({ userId }); // c1
-    // c2: const movie = await Movie.findById(movieId); // c2
+    const movie = await Movie.findById(movieId);
     if (!movie) {
-      return res.status(401).json({
-        msg: "Movie is not found!",
+      return res.status(404).json({
+        msg: "Movie not found!",
       });
     }
-    // if (movie.userId!== requestUserId) {
-    // 3. Update movie, do not update userId
-    movie.skills = skills;
-    movie.hobbies = hobbies;
-    movie.targets = targets;
 
-    const updatedMovie = await movie.save();
-    // upsert
+    movie.name = name;
+    movie.time = time;
+    movie.year = year;
+    movie.image = image;
+    movie.introduce = introduce;
+
+    await movie.save();
 
     return res.status(200).json({
       msg: "Update movie successfully!",
-      data: updatedMovie,
+      data: movie,
     });
   } catch (error) {
     res.status(500).json({
@@ -122,39 +125,20 @@ export const updateMovie = async (req, res) => {
   }
 };
 
+// Delete an existing movie
 export const deleteMovie = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const { _id: requestUserId } = req.user;
-    // c2: const {movieId} = req.params; /:movieId
+    const { movieId } = req.params;
 
-    // 0. Check owner
-    if (userId !== requestUserId.toString()) {
-      return res.status(401).json({
-        msg: "You are not owner of this movie!",
-      });
-    }
-    // 1. Validation
-    if (!userId) {
-      return res.status(400).json({
-        msg: "userId is required!",
-      });
-    }
-    // 2. Check if user is existed
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(401).json({
-        msg: "User is not found!",
-      });
-    }
-    const movie = await Movie.findOne({ userId });
+    const movie = await Movie.findById(movieId);
     if (!movie) {
-      return res.status(401).json({
-        msg: "Movie is not found!",
+      return res.status(404).json({
+        msg: "Movie not found!",
       });
     }
-    // 3. Delete movie
-    await Movie.findOneAndDelete({ _id: movie._id }); // c1
+
+    await movie.deleteOne();
+
     return res.status(200).json({
       msg: "Delete movie successfully!",
     });
@@ -163,5 +147,23 @@ export const deleteMovie = async (req, res) => {
       error: error.message,
       stack: error.stack,
     });
+  }
+};
+
+export const searchMovies = async (req, res) => {
+  try {
+    const { keyword } = req.query;
+
+    // Search for movies whose name contains the keyword
+    const movies = await Movie.find({
+      name: { $regex: keyword, $options: "i" },
+    });
+
+    return res.status(200).json({
+      message: `Movies containing "${keyword}" in their names`,
+      data: movies,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
