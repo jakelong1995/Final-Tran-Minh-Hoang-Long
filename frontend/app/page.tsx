@@ -4,15 +4,24 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  Dialog,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { movies } from "@/data";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFD54F] p-8 flex justify-center">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+    <div className="min-h-screen bg-[#FFD54F] p-8 flex justify-center items-center">
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow h-fit">
         <header className="flex items-center justify-between">
           <MenuIcon className="text-gray-800 h-6 w-6" />
           <h1 className="font-bold text-xl">MOVIE UI</h1>
@@ -34,17 +43,60 @@ export default function Home() {
                 className=" w-full sm:basis-1/3 lg:basic-1/2"
               >
                 <div className="space-y-2">
-                  <Image
-                    alt={movie.name}
-                    className="rounded-lg"
-                    height="700"
-                    src={movie.image}
-                    style={{
-                      aspectRatio: "3/4",
-                      objectFit: "cover",
-                    }}
-                    width="300"
-                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Image
+                        alt={movie.name}
+                        className="rounded-lg"
+                        height="700"
+                        src={movie.image}
+                        style={{
+                          aspectRatio: "3/4",
+                          objectFit: "cover",
+                        }}
+                        width="300"
+                      />
+                    </DialogTrigger>
+                    <DialogContent className=" bg-white rounded-lg shadow-lg p-6 flex max-w-2xl">
+                      <Image
+                        alt={movie.name}
+                        className="rounded-lg"
+                        height="430"
+                        src={movie.image}
+                        style={{
+                          aspectRatio: "300/430",
+                          objectFit: "cover",
+                        }}
+                        width="300"
+                      />
+                      <div className="flex flex-col space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-2">
+                            <DialogTitle className="text-3xl font-bold">
+                              {movie.name}
+                            </DialogTitle>
+                            <p className="text-sm text-gray-500">
+                              {movie.time}
+                              {` minutes`}
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <DialogDescription className="text-gray-800">
+                            {movie.introduce}
+                          </DialogDescription>
+                        </div>
+                        <div>
+                          <Button
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                            variant="default"
+                          >
+                            Play Movie
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <h3 className="text-sm font-bold">{movie.name}</h3>
                   <p className="text-xs text-gray-600">
                     {movie.time}
