@@ -4,13 +4,14 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  Dialog,
 } from "@/components/ui/carousel";
 import { movies } from "@/data";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFD54F] p-8">
+    <div className="min-h-screen bg-[#FFD54F] p-8 flex justify-center">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
         <header className="flex items-center justify-between">
           <MenuIcon className="text-gray-800 h-6 w-6" />
@@ -24,7 +25,7 @@ export default function Home() {
           opts={{
             align: "start",
           }}
-          className="mx-12 w-full max-w-2xl flex justify-between"
+          className="mx-12 w-full max-w-2xl"
         >
           <CarouselContent>
             {movies.map((movie, index) => (
