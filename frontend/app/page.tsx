@@ -1,3 +1,13 @@
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { movies } from "@/data";
+import Image from "next/image";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#FFD54F] p-8">
@@ -7,69 +17,45 @@ export default function Home() {
           <h1 className="font-bold text-xl">MOVIE UI</h1>
           <SearchIcon className="text-gray-800 h-6 w-6" />
         </header>
-        <h2 className="mt-8 mb-6 text-lg font-semibold">Most Popular Movies</h2>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="flex flex-col space-y-2">
-            <img
-              alt="Room"
-              className="rounded-lg"
-              height="150"
-              src="/placeholder.svg"
-              style={{
-                aspectRatio: "150/150",
-                objectFit: "cover",
-              }}
-              width="150"
-            />
-            <h3 className="text-sm font-bold">Room</h3>
-            <p className="text-xs text-gray-600">117 min 2015</p>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <img
-              alt="Whiplash"
-              className="rounded-lg"
-              height="150"
-              src="/placeholder.svg"
-              style={{
-                aspectRatio: "150/150",
-                objectFit: "cover",
-              }}
-              width="150"
-            />
-            <h3 className="text-sm font-bold">Whiplash</h3>
-            <p className="text-xs text-gray-600">167 min 2015</p>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <img
-              alt="Mad Max"
-              className="rounded-lg"
-              height="150"
-              src="/placeholder.svg"
-              style={{
-                aspectRatio: "150/150",
-                objectFit: "cover",
-              }}
-              width="150"
-            />
-            <h3 className="text-sm font-bold">Mad Max</h3>
-            <p className="text-xs text-gray-600">120 min 2015</p>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <img
-              alt="The Revenant"
-              className="rounded-lg"
-              height="150"
-              src="/placeholder.svg"
-              style={{
-                aspectRatio: "150/150",
-                objectFit: "cover",
-              }}
-              width="150"
-            />
-            <h3 className="text-sm font-bold">The Revenant</h3>
-            <p className="text-xs text-gray-600">156 min 2015</p>
-          </div>
-        </div>
+        <h2 className="mt-8 mb-6 text-lg font-semibold text-center">
+          Most Popular Movies
+        </h2>
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+          className="mx-12 w-full max-w-2xl flex justify-between"
+        >
+          <CarouselContent>
+            {movies.map((movie, index) => (
+              <CarouselItem
+                key={index}
+                className=" w-full sm:basis-1/3 lg:basic-1/2"
+              >
+                <div className="space-y-2">
+                  <Image
+                    alt={movie.name}
+                    className="rounded-lg"
+                    height="700"
+                    src={movie.image}
+                    style={{
+                      aspectRatio: "3/4",
+                      objectFit: "cover",
+                    }}
+                    width="300"
+                  />
+                  <h3 className="text-sm font-bold">{movie.name}</h3>
+                  <p className="text-xs text-gray-600">
+                    {movie.time}
+                    {` minutes`}
+                  </p>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   );
